@@ -1,7 +1,7 @@
 # title: "make-teams-table"
 # description: "process and package nba2018.csv data"
 # input: nba2018.csv
-# output: nba2018-teams.csv efficiency-summary.txt
+# output: nba2018-teams.csv efficiency-summary.txt teams-summary.txt
 
 
 data <- read.csv("../data/nba2018.csv")
@@ -43,7 +43,8 @@ rebounds <- data$off_rebounds + data$def_rebounds
 
 data <- mutate(data, missed_fg, missed_ft, rebounds)
 efficiency <- (data$points + data$rebounds + data$assists + data$steals + data$blocks - data$missed_fg - data$missed_ft - data$turnovers)/data$games
-mutate(data, efficiency)
+data <- mutate(data, efficiency)
+data$efficiency
 
 effsum <- summary(efficiency)
 sink("../output/efficiency-summary.txt", append = TRUE)
@@ -65,14 +66,14 @@ steals <- summarize(group_by(data, team), steals = sum(steals))
 blocks <- summarize(group_by(data, team), blocks = sum(blocks))
 turnovers <- summarize(group_by(data, team), turnovers = sum(turnovers))
 fouls <- summarize(group_by(data, team), fouls = sum(fouls))
-efficiency <- summarize(group_by(data, team), efficiency = sum(efficiency))
+efficiency <- summarize(group_by(data, team), sum(efficiency))
 
 teams <- data.frame(experience, salary[ , 2], points3[ , 2], points2[ , 2], points1[ , 2], 
                     points[ , 2], off_rebounds[ , 2], def_rebounds[ , 2], 
                     assists[ , 2], steals[ , 2], blocks[ , 2], turnovers[ , 2], fouls[ , 2],
                     efficiency[ , 2])
 
-sink("../data/teams-summary.txt", append = TRUE)
+sink("../data/teams-summary.txt")
 teams
 sink()
 
